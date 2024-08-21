@@ -15,17 +15,31 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _pageIndex = 0;
 
-  final List _tabs = <TabInfo>[
-    TabInfo(tab: const Dashboard(), title: "الرئيسية", icon: Icons.home),
-    TabInfo(
-        tab: const AddNewProduct(),
-        title: "اضف منتج",
-        icon: Icons.barcode_reader),
-    TabInfo(
-        tab: const Products(),
-        title: "المنتجات",
-        icon: Icons.production_quantity_limits),
-  ];
+  void switchToAddProduct() {
+    setState(() {
+      _pageIndex = 1;
+    });
+  }
+
+  List _tabs = <TabInfo>[];
+
+  @override
+  void initState() {
+    _tabs = [
+      TabInfo(tab: const Dashboard(), title: "الرئيسية", icon: Icons.home),
+      TabInfo(
+          tab: const AddNewProduct(),
+          title: "اضف منتج",
+          icon: Icons.barcode_reader),
+      TabInfo(
+          tab: Products(
+            function: switchToAddProduct,
+          ),
+          title: "المنتجات",
+          icon: Icons.production_quantity_limits),
+    ];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
