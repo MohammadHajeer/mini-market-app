@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mini_market_app/home.dart';
+import 'package:mini_market_app/pages/home.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 void main() {
