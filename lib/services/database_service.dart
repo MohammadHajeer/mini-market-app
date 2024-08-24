@@ -71,6 +71,7 @@ class DatabaseService {
 
     return products;
   }
+
   Future<ProductModel?> getProduct(String barCode) async {
     final db = await database;
 

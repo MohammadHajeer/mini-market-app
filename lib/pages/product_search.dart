@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:mini_market_app/models/product.dart';
 import 'package:mini_market_app/services/database_service.dart';
@@ -15,28 +16,37 @@ class ProductSearch extends StatefulWidget {
 class _ProductSearchState extends State<ProductSearch> {
   String barCode = "";
   final DatabaseService _databaseService = DatabaseService.instance;
+  final player = AudioPlayer();
 
   void openBarCodeReader() async {
     var res = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SimpleBarcodeScannerPage(),
+        builder: (context) => const SimpleBarcodeScannerPage(
+          lineColor: "teal",
+          cancelButtonText: "الغاء",
+        ),
       ),
     );
 
     if (res is String) {
+      await player.play(AssetSource("beep.mp3"));
       setState(() {
+        if (res.length < 5) {
+          barCode = "";
+          return;
+        }
         barCode = res;
       });
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) async => openBarCodeReader());
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance
+  //       .addPostFrameCallback((_) async => openBarCodeReader());
+  // }
 
   Widget _foundProduct(ProductModel product) {
     return Container(
@@ -46,10 +56,10 @@ class _ProductSearchState extends State<ProductSearch> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.content_paste_search,
             size: 100,
-            color: Colors.teal,
+            color: Theme.of(context).primaryColor,
           ),
           Text(
             product.name,
@@ -57,7 +67,8 @@ class _ProductSearchState extends State<ProductSearch> {
           ),
           Text(
             Utils().formatPrice(product.price),
-            style: const TextStyle(fontSize: 50, color: Colors.teal),
+            style:
+                TextStyle(fontSize: 50, color: Theme.of(context).primaryColor),
           ),
           Text(
             product.barCode,
@@ -67,7 +78,11 @@ class _ProductSearchState extends State<ProductSearch> {
           const SizedBox(
             height: 10,
           ),
-          Button(onPressed: () => openBarCodeReader(), text: "ابحث عن منتج اخر")
+          Button(
+            onPressed: () => openBarCodeReader(),
+            text: "ابحث عن منتج اخر",
+            width: double.infinity,
+          )
         ],
       ),
     );
@@ -81,10 +96,10 @@ class _ProductSearchState extends State<ProductSearch> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.search_off,
             size: 100,
-            color: Colors.teal,
+            color: Theme.of(context).primaryColor,
           ),
           const Text(
             "لم يتم العثور على المنتج",
@@ -92,13 +107,45 @@ class _ProductSearchState extends State<ProductSearch> {
           ),
           Text(
             barCode,
-            style: const TextStyle(fontSize: 30, color: Colors.teal),
+            style:
+                TextStyle(fontSize: 30, color: Theme.of(context).primaryColor),
           ),
           const Divider(),
           const SizedBox(
             height: 10,
           ),
-          Button(onPressed: () => openBarCodeReader(), text: "ابحث عن منتج اخر")
+          Button(
+            onPressed: () => openBarCodeReader(),
+            text: "ابحث عن منتج اخر",
+            width: double.infinity,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _searchForProduct() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.barcode_reader,
+            size: 150,
+            color: Colors.grey,
+          ),
+          const Divider(),
+          const SizedBox(
+            height: 10,
+          ),
+          Button(
+            onPressed: () => openBarCodeReader(),
+            text: "اضغط هنا للبحث عن منتج",
+            width: double.infinity,
+          )
         ],
       ),
     );
@@ -122,6 +169,6 @@ class _ProductSearchState extends State<ProductSearch> {
               }
             },
           )
-        : const Text("لم يتم العثور على الباركود");
+        : _searchForProduct();
   }
 }
